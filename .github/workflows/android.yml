@@ -1,0 +1,55 @@
+name: Сборка Android APK
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Загрузка исходников
+        uses: actions/checkout@v4
+
+      - name: Установка JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Настройка Gradle (кэш)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Права на выполнение gradlew
+        run: chmod +x gradlew
+
+      - name: Сборка Debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Сборка Release APK
+        run: ./gradlew assembleRelease --stacktrace
+
+      - name: Сохранить APK как артефакт
+        uses: actions/upload-artifact@v4
+        with:
+          name: APK-Инвентаризация-ПК
+          path: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Публикация APK в Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/apk/debug/app-debug.apk
+            app/build/outputs/apk/release/app-release.apk
