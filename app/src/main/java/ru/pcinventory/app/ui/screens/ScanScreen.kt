@@ -63,10 +63,11 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.coroutines.launch
 import ru.pcinventory.app.InventoryViewModel
+import ru.pcinventory.app.ScanResult
 import java.util.concurrent.Executors
 
 /** Результат последнего сканирования для карточки на экране. */
-private data class ScanUi(val kind: InventoryViewModel.ScanResult, val code: String, val name: String)
+private data class ScanUi(val kind: ScanResult, val code: String, val name: String)
 
 @OptIn(
     androidx.compose.material3.ExperimentalMaterial3Api::class,
@@ -127,12 +128,12 @@ fun ScanScreen(vm: InventoryViewModel, onBack: () -> Unit) {
             val res = vm.scan(code)
             val known = items.firstOrNull { it.inventoryNumber == code.trim() }
             result = when (res) {
-                InventoryViewModel.ScanResult.FOUND -> {
+                ScanResult.FOUND -> {
                     vibrate(context)
                     ScanUi(res, code, known?.name ?: "")
                 }
-                InventoryViewModel.ScanResult.ALREADY -> ScanUi(res, code, known?.name ?: "")
-                InventoryViewModel.ScanResult.NOT_FOUND -> ScanUi(res, code, "")
+                ScanResult.ALREADY -> ScanUi(res, code, known?.name ?: "")
+                ScanResult.NOT_FOUND -> ScanUi(res, code, "")
             }
         }
     }
@@ -224,11 +225,11 @@ fun ScanScreen(vm: InventoryViewModel, onBack: () -> Unit) {
         // Карточка результата
         result?.let { r ->
             val (bg, text) = when (r.kind) {
-                InventoryViewModel.ScanResult.FOUND ->
+                ScanResult.FOUND ->
                     Color(0xFFDCFCE7) to "✓ Найдено: ${r.name} (${r.code})"
-                InventoryViewModel.ScanResult.ALREADY ->
+                ScanResult.ALREADY ->
                     Color(0xFFE5E7EB) to "Уже отмечено: ${r.name}"
-                InventoryViewModel.ScanResult.NOT_FOUND ->
+                ScanResult.NOT_FOUND ->
                     Color(0xFFFEE2E2) to "Код не найден: ${r.code}"
             }
             Card(
@@ -241,7 +242,7 @@ fun ScanScreen(vm: InventoryViewModel, onBack: () -> Unit) {
             ) {
                 Column(Modifier.padding(12.dp)) {
                     Text(text, maxLines = 2, overflow = TextOverflow.Ellipsis)
-                    if (r.kind == InventoryViewModel.ScanResult.NOT_FOUND) {
+                    if (r.kind == ScanResult.NOT_FOUND) {
                         Spacer(Modifier.padding(top = 8.dp))
                         Button(onClick = { addDialogCode = r.code }) {
                             Text("Добавить позицию")
@@ -285,7 +286,7 @@ fun ScanScreen(vm: InventoryViewModel, onBack: () -> Unit) {
                 scope.launch {
                     if (vm.addItem(c, i, n, d)) {
                         result = ScanUi(
-                            InventoryViewModel.ScanResult.FOUND,
+                            ScanResult.FOUND,
                             i,
                             n
                         )

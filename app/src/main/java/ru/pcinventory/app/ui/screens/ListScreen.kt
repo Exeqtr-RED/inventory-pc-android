@@ -91,7 +91,7 @@ private val listComparator = Comparator<Item> { a, b ->
     } else if (ga == 1) {
         (a.scannedAt ?: 0L).compareTo(b.scannedAt ?: 0L)
     } else {
-        compareValues(a.sortOrder to a.id, b.sortOrder to b.id)
+        compareValuesBy(a, b, { it.sortOrder }, { it.id })
     }
 }
 
