@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Тема без AppCompat: framework Material Light, без ActionBar (панель — Compose TopAppBar) -->
+    <style name="Theme.InventoryPC" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/green_dark</item>
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
+</resources>

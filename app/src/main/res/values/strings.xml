@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Инвентаризация ПК</string>
+    <string name="camera_permission_rationale">Для сканирования QR-кодов нужен доступ к камере</string>
+    <string name="grant_camera">Выдать доступ</string>
+    <string name="manual_hint">Введите инв. № вручную</string>
+    <string name="manual_find">Найти</string>
+    <string name="stickers_title">QR-наклейки</string>
+    <string name="print_pdf">Печать PDF</string>
+</resources>
